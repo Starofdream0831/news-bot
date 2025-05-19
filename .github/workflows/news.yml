@@ -1,5 +1,10 @@
 name: NTT News Bot
 
+env:
+  GMAIL_USER: ${{ secrets.GMAIL_USER }}
+  GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+  TO_EMAIL: ${{ secrets.TO_EMAIL }}
+
 on:
   schedule:
     - cron: '0 2 * * *'  # 毎日JSTの11時に実行
