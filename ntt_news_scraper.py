@@ -11,6 +11,8 @@ def get_ntt_news():
     soup = BeautifulSoup(response.text, 'xml')
     items = soup.find_all('item')[:3]
 
+    print("DEBUG NEWS:\n", news)  # ← 追加！内容確認用
+    
     messages = []
     for item in items:
         title = item.title.text
