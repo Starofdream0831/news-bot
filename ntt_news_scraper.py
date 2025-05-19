@@ -10,8 +10,6 @@ def get_ntt_news():
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'xml')
     items = soup.find_all('item')[:3]
-
-    print("DEBUG NEWS:\n", news)  # ← 追加！内容確認用
     
     messages = []
     for item in items:
@@ -19,6 +17,8 @@ def get_ntt_news():
         link = item.link.text
         messages.append(f'{title}\n{link}')
 
+    print("DEBUG NEWS:\n", '\n\n'.join(messages))  # ← これが正解！
+    
     return '\n\n'.join(messages)
 
 def send_email(message):
