@@ -6,19 +6,28 @@ from email.header import Header
 import os
 
 def get_ntt_news():
-    url = 'https://news.yahoo.co.jp/rss/media/ntt/all.xml'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'xml')
-    items = soup.find_all('item')[:3]
-    
+    url = 'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        return "ニュースの取得に失敗しました（ステータスコード: " + str(response.status_code) + "）"
+
+    soup = BeautifulSoup(response.content, 'xml')
+    items = soup.find_all('item')
+
+    ntt_items = [item for item in items if 'NTT' in item.title.text]
+
+    if not ntt_items:
+        return "本日はNTT関連のニュースは見つかりませんでした。"
+
     messages = []
-    for item in items:
+    for item in ntt_items[:3]:
         title = item.title.text
         link = item.link.text
         messages.append(f'{title}\n{link}')
 
-    print("DEBUG NEWS:\n", '\n\n'.join(messages))  # ← これが正解！
-    
+    print("DEBUG NEWS:\n", '\n\n'.join(messages))
     return '\n\n'.join(messages)
 
 def send_email(message):
