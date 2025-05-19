@@ -23,6 +23,8 @@ def send_email(message):
     gmail_password = os.environ.get('GMAIL_PASSWORD')
     to_email = os.environ.get('TO_EMAIL')
 
+    print("DEBUG:", gmail_user, to_email)  # ← 追加！
+    
     msg = MIMEText(message)
     msg['Subject'] = '【NTTニュース速報】'
     msg['From'] = gmail_user
