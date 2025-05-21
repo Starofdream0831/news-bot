@@ -30,6 +30,25 @@ def get_ntt_news():
     print("DEBUG NEWS:\n", '\n\n'.join(messages))
     return '\n\n'.join(messages)
 
+def get_stock_prices():
+    stock_codes = ['9343', '7378', '9264', '2107', '2498', '7164', '8424', '8425', '8584', '6411']
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    stock_lines = []
+
+    for code in stock_codes:
+        url = f'https://quote.jpx.co.jp/jpx/template/quote.cgi?F=tmpstock&QCODE={code}'
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        try:
+            name = soup.find('th', class_='meigara').text.strip()
+            price = soup.find('td', class_='price').text.strip()
+            stock_lines.append(f'{code} {name}：{price}円')
+        except:
+            stock_lines.append(f'{code}：株価情報取得失敗')
+
+    return '\n'.join(stock_lines)
+
 def send_email(message):
     gmail_user = os.environ.get('GMAIL_USER')
     gmail_password = os.environ.get('GMAIL_PASSWORD')
@@ -44,13 +63,18 @@ def send_email(message):
 
 {message}
 
+-------------------------------
+【株価情報】
+{stock_summary}
+-------------------------------
+
 良い一日を！
 -- NTTニュースBot"""
 
     try:
         # メールのヘッダーと本文（エンコード明示）
         msg = MIMEText(body, 'plain', 'utf-8')
-        msg['Subject'] = Header('【NTTニュース速報】本日のニュースまとめ', 'utf-8')
+        msg['Subject'] = Header('【NTTニュース+株価通知】本日のまとめ', 'utf-8')
         msg['From'] = gmail_user
         msg['To'] = to_email
 
