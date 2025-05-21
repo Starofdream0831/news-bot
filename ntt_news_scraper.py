@@ -54,8 +54,9 @@ def send_email(message):
     gmail_password = os.environ.get('GMAIL_PASSWORD')
     to_email = os.environ.get('TO_EMAIL')
 
-    print("DEBUG:", gmail_user, to_email)  # デバッグ確認用（削除してもOK）
-
+    # ←ここに追加！
+    stock_summary = get_stock_prices()
+    
     # メール本文（人間っぽくする）
     body = f"""こんにちは！
 
