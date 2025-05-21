@@ -36,16 +36,17 @@ def get_stock_prices():
     stock_lines = []
 
     for code in stock_codes:
-        url = f'https://quote.jpx.co.jp/jpx/template/quote.cgi?F=tmpstock&QCODE={code}'
+        url = f'https://finance.yahoo.co.jp/quote/{code}.T'
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
 
         try:
-            name = soup.find('th', class_='meigara').text.strip()
-            price = soup.find('td', class_='price').text.strip()
+            name = soup.find('h1').text.strip()
+            price = soup.find('span', attrs={'class': 'value'}).text.strip()
             stock_lines.append(f'{code} {name}：{price}円')
-        except:
+        except Exception as e:
             stock_lines.append(f'{code}：株価情報取得失敗')
+            print(f'ERROR: {code} → {e}')
 
     return '\n'.join(stock_lines)
 
