@@ -45,13 +45,42 @@ def get_stock_prices():
 
     return '\n'.join(stock_lines)
 
+def check_volume_ranking():
+    url = 'https://kabutan.jp/warning/?mode=3_1'
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    target_codes = ['9343', '7378', '9264', '2107', '2498', '7164', '8424', '8425', '8584', '6411']
+    table = soup.find('table', class_='stock_table')
+    if not table:
+        return "出来高急増ランキングの取得に失敗しました。"
+
+    rows = table.find_all('tr')[1:21]  # 上位20銘柄だけチェック
+    matches = []
+
+    for i, row in enumerate(rows, 1):
+        cols = row.find_all('td')
+        if not cols:
+            continue
+        code = cols[0].text.strip()
+        name = cols[1].text.strip()
+        if code in target_codes:
+            matches.append(f"{i}位：{code} {name}")
+
+    if matches:
+        return "以下の銘柄が出来高急増ランキングにランクインしています：\n" + "\n".join(matches)
+    else:
+        return "本日は指定銘柄のランクインは確認できませんでした。"
+
 def send_email(news_message):
     gmail_user = os.environ.get('GMAIL_USER')
     gmail_password = os.environ.get('GMAIL_PASSWORD')
     to_email = os.environ.get('TO_EMAIL')
 
     stock_summary = get_stock_prices()
-
+    volume_alert = check_volume_ranking()
+    
     body = f"""こんにちは！
 
 以下は本日のNTT関連ニュースです：
@@ -61,6 +90,9 @@ def send_email(news_message):
 -------------------------------
 【株価情報】
 {stock_summary}
+-------------------------------
+【出来高急増ランキング】
+{volume_alert}
 -------------------------------
 
 良い一日を！
