@@ -30,7 +30,7 @@ def get_ntt_news():
     return '\n\n'.join(messages)
 
 def get_stock_prices():
-    stock_codes = ['9343.T', '7378.T', '9264.T', '2498.T', '7164.T', '8424.T', '8425.T', '8584.T', '5491.T', '4578.T']
+    stock_codes = ['5574.T', '7581.T', '7803.T', '7936.T' ]
     stock_lines = []
 
     for code in stock_codes:
